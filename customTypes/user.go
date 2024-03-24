@@ -1,4 +1,4 @@
-package types
+package customTypes
 
 // `bson:"_id"` to convert (map) 'ID' in json response to 'id'
 type User struct {

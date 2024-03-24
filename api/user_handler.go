@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hotel-reservation/types"
+	"hotel-reservation/customTypes"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -9,7 +9,7 @@ import (
 // start func name with upper case to make it public
 
 func HandleGetUsers(c *fiber.Ctx) error {
-	u := types.User{
+	u := customTypes.User{
 		FirstName: "James",
 		LastName:  "At the watercooler",
 	}
