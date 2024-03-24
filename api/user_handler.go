@@ -1,21 +1,40 @@
 package api
 
 import (
+	"context"
 	"hotel-reservation/customTypes"
+	"hotel-reservation/db"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-// start func name with upper case to make it public
+type UserHandler struct {
+	userStore db.UserStore
+}
 
-func HandleGetUsers(c *fiber.Ctx) error {
+// start func name with upper case to make it public
+func NewUserHandler(userStore db.UserStore) *UserHandler {
+	return &UserHandler{
+		userStore: userStore,
+	}
+}
+
+func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
+	var (
+		id  = c.Params("id")
+		ctx = context.Background()
+	)
+	user, err := h.userStore.GetUserByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return c.JSON(user)
+}
+
+func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	u := customTypes.User{
 		FirstName: "James",
 		LastName:  "At the watercooler",
 	}
 	return c.JSON(u)
-}
-
-func HandleGetUser(c *fiber.Ctx) error {
-	return c.JSON("James")
 }
