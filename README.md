@@ -34,3 +34,4 @@ docker run --name mongodb -d mongo:latest -p 27017:27017
 // @ in the beginning of a command hides output
 4. Install mongodb as a Docker container - run 'docker run --name mongodb -d --restart=unless-stopped -p 27017:27017 mongo:latest mongod --bind_ip_all' in the terminal
 5. Install mongodb client - run 'go get go.mongodb.org/mongo-driver/mongo' in the terminal
+6. Install bcrypt for passwords - run 'go get golang.org/x/crypto/bcrypt' in the terminal

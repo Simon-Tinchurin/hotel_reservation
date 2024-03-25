@@ -1,18 +1,15 @@
 package main
 
-// Next 22
+// Next 23
 
 import (
 	"context"
 	"flag"
-	"fmt"
 	"hotel-reservation/api"
-	"hotel-reservation/customTypes"
 	"hotel-reservation/db"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -36,9 +33,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ctx := context.Background()
+	// ctx := context.Background()
 	// connect to the user collection
-	userCol := client.Database(dbname).Collection(userCollection)
+	// userCol := client.Database(dbname).Collection(userCollection)
 	// create user
 	// user := customTypes.User{
 	// 	FirstName: "James",
@@ -52,12 +49,12 @@ func main() {
 
 	// find first user, decode, find
 	// and inject the values in the fields of custom type User
-	var james customTypes.User
-	if err := userCol.FindOne(ctx, bson.M{}).Decode(&james); err != nil {
-		log.Fatal(err)
-	}
+	// var james customTypes.User
+	// if err := userCol.FindOne(ctx, bson.M{}).Decode(&james); err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	fmt.Println(james)
+	// fmt.Println(james)
 
 	listenAddr := flag.String("listenAddr", ":5000",
 		"The listen address of the API server")
@@ -69,6 +66,7 @@ func main() {
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
 	apiv1.Get("/user", userHandler.HandleGetUsers)
 	apiv1.Get("/user/:id", userHandler.HandleGetUser)
+	apiv1.Post("/user", userHandler.HandlePostUser)
 
 	app.Listen(*listenAddr)
 }
