@@ -1,6 +1,6 @@
 package main
 
-// Next 23
+// Next 24
 
 import (
 	"context"
@@ -25,45 +25,23 @@ var config = fiber.Config{
 }
 
 func main() {
-	// connection to the mongodb
-	client, err := mongo.Connect(context.TODO(),
-		options.Client().ApplyURI(dburi))
+	listenAddr := flag.String("listenAddr", ":5000", "The listen address of the API server")
+	flag.Parse()
 
+	// connection to the mongodb
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// ctx := context.Background()
-	// connect to the user collection
-	// userCol := client.Database(dbname).Collection(userCollection)
-	// create user
-	// user := customTypes.User{
-	// 	FirstName: "James",
-	// 	LastName:  "At the watercooler",
-	// }
-	// inserrt the user
-	// result, err := userCol.InsertOne(ctx, user)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// find first user, decode, find
-	// and inject the values in the fields of custom type User
-	// var james customTypes.User
-	// if err := userCol.FindOne(ctx, bson.M{}).Decode(&james); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Println(james)
-
-	listenAddr := flag.String("listenAddr", ":5000",
-		"The listen address of the API server")
-	flag.Parse()
+	// handlers initialization
+	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
 
 	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
+	apiv1.Put("/user/:id", userHandler.HandlePutUser)
+	apiv1.Delete("/user/:id", userHandler.HandleDeleteUser)
 	apiv1.Get("/user", userHandler.HandleGetUsers)
 	apiv1.Get("/user/:id", userHandler.HandleGetUser)
 	apiv1.Post("/user", userHandler.HandlePostUser)
