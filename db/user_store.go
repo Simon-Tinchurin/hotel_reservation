@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"hotel-reservation/customTypes"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,7 +12,14 @@ import (
 
 const userColl = "users"
 
+// define separately to use across multiple interfaces
+type Dropper interface {
+	Drop(context.Context) error
+}
+
 type UserStore interface {
+	Dropper
+
 	GetUserByID(context.Context, string) (*customTypes.User, error)
 	GetUsers(context.Context) ([]*customTypes.User, error)
 	InsertUser(context.Context, *customTypes.User) (*customTypes.User, error)
@@ -24,11 +32,16 @@ type MongoUserStore struct {
 	collection *mongo.Collection
 }
 
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
+func NewMongoUserStore(client *mongo.Client, dbname string) *MongoUserStore {
 	return &MongoUserStore{
 		client:     client,
-		collection: client.Database(DBNAME).Collection(userColl),
+		collection: client.Database(dbname).Collection(userColl),
 	}
+}
+
+func (s *MongoUserStore) Drop(ctx context.Context) error {
+	fmt.Println("--- dropping user collection ---")
+	return s.collection.Drop(ctx)
 }
 
 func (s *MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, params customTypes.UpdateUserParams) error {
