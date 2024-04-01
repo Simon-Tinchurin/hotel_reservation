@@ -27,16 +27,16 @@ func seedHotel(name, location string, rating int) {
 	}
 	rooms := []customTypes.Room{
 		{
-			Type:      customTypes.SingleRoomType,
-			BasePrice: 99.9,
+			Size:  "small",
+			Price: 99.9,
 		},
 		{
-			Type:      customTypes.DeluxeRoomType,
-			BasePrice: 1999.9,
+			Size:  "normal",
+			Price: 1999.9,
 		},
 		{
-			Type:      customTypes.SeaSideRoomType,
-			BasePrice: 4321.2,
+			Size:  "kingsize",
+			Price: 4321.2,
 		},
 	}
 	insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
@@ -52,21 +52,21 @@ func seedHotel(name, location string, rating int) {
 	}
 }
 
-func main() {
-	seedHotel("Bellucia", "Napoli", 100)
-	seedHotel("The cozy hotel", "Roma", 250)
-}
-
 func init() {
 	var err error
 	// connection to the mongodb
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+	client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
 	if err != nil {
 		log.Fatal(err)
 	}
 	// if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
 	// 	log.Fatal(err)
 	// }
-	hotelStore := db.NewMongoHotelStore(client)
+	hotelStore = db.NewMongoHotelStore(client)
 	roomStore = db.NewMongoRoomStore(client, hotelStore)
+}
+
+func main() {
+	seedHotel("Bellucia", "Napoli", 100)
+	seedHotel("The cozy hotel", "Roma", 250)
 }
