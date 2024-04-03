@@ -1,11 +1,12 @@
 package main
 
-// Next 28
+// Next 29
 
 import (
 	"context"
 	"flag"
 	"hotel-reservation/api"
+	"hotel-reservation/api/middleware"
 	"hotel-reservation/db"
 	"log"
 
@@ -42,9 +43,15 @@ func main() {
 		}
 		userHandler  = api.NewUserHandler(userStore)
 		hotelHandler = api.NewHotelHandler(store)
+		authHandler  = api.NewAuthHandler(userStore)
 		app          = fiber.New(config)
-		apiv1        = app.Group("/api/v1")
+		auth         = app.Group("/api/")
+		// adding JWT authentication
+		apiv1 = app.Group("/api/v1", middleware.JWTAuthentication)
 	)
+
+	// authentication
+	auth.Post("/auth/", authHandler.HandleAuthenticate)
 
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
 	apiv1.Delete("/user/:id", userHandler.HandleDeleteUser)
