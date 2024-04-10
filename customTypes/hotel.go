@@ -2,14 +2,6 @@ package customTypes
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-const (
-	_              RoomType = iota // to start cont from 1
-	SingleRoomType                 // 1
-	DoubleRoomType                 // 2
-	SeaSideRoomType
-	DeluxeRoomType
-)
-
 type Hotel struct {
 	Id       primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"`
 	Name     string               `bson:"name" json:"name"`
