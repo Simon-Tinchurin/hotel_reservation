@@ -2,11 +2,9 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
-	"hotel-reservation/customTypes"
-	"hotel-reservation/db"
+	"hotel-reservation/db/fixtures"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -15,38 +13,39 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func insertTestUser(t *testing.T, userStore db.UserStore) *customTypes.User {
-	user, err := customTypes.NewUserFromParams(customTypes.CreateUserParams{
-		FirstName: "James",
-		LastName:  "Bar",
-		Email:     "james@foo.com",
-		Password:  "password123",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = userStore.InsertUser(context.TODO(), user)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return user
-}
+// func insertTestUser(t *testing.T, userStore db.UserStore) *customTypes.User {
+// 	user, err := customTypes.NewUserFromParams(customTypes.CreateUserParams{
+// 		FirstName: "James",
+// 		LastName:  "Bar",
+// 		Email:     "james@foo.com",
+// 		Password:  "password123",
+// 	})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	_, err = userStore.InsertUser(context.TODO(), user)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	return user
+// }
 
 func TestAuthenticateSuccess(t *testing.T) {
 	// simple setup for the test DB
 	tdb := setup(t)
 	// drop test DB after test
 	defer tdb.teardown(t)
-	insertedUser := insertTestUser(t, tdb.UserStore)
+	// insertedUser := insertTestUser(t, tdb.User)
+	insertedUser := fixtures.AddUser(tdb.Store, "james", "foo", false)
 
 	app := fiber.New()
-	authHandler := NewAuthHandler(tdb.UserStore)
+	authHandler := NewAuthHandler(tdb.User)
 	// simple route for testing POST request
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
 	params := AuthParams{
 		Email:    "james@foo.com",
-		Password: "password123",
+		Password: "james_foo",
 	}
 
 	b, _ := json.Marshal(params)
@@ -82,10 +81,11 @@ func TestAuthenticateWithWrongPassword(t *testing.T) {
 	tdb := setup(t)
 	// drop test DB after test
 	defer tdb.teardown(t)
-	insertTestUser(t, tdb.UserStore)
+	// insertTestUser(t, tdb.User)
+	fixtures.AddUser(tdb.Store, "james", "foo", false)
 
 	app := fiber.New()
-	authHandler := NewAuthHandler(tdb.UserStore)
+	authHandler := NewAuthHandler(tdb.User)
 	// simple route for testing POST request
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
