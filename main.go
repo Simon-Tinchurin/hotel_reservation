@@ -1,12 +1,11 @@
 package main
 
-// Next 37
+// Next 38
 
 import (
 	"context"
 	"flag"
 	"hotel-reservation/api"
-	"hotel-reservation/api/middleware"
 	"hotel-reservation/db"
 	"log"
 
@@ -16,9 +15,7 @@ import (
 )
 
 var config = fiber.Config{
-	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-		return ctx.JSON(map[string]string{"error": err.Error()})
-	},
+	ErrorHandler: api.ErrorHandler,
 }
 
 func main() {
@@ -51,8 +48,8 @@ func main() {
 		app            = fiber.New(config)
 		auth           = app.Group("/api/")
 		// adding JWT authentication
-		apiv1 = app.Group("/api/v1", middleware.JWTAuthentication(userStore))
-		admin = apiv1.Group("/admin", middleware.AdminAuth)
+		apiv1 = app.Group("/api/v1", api.JWTAuthentication(userStore))
+		admin = apiv1.Group("/admin", api.AdminAuth)
 	)
 
 	// authentication
