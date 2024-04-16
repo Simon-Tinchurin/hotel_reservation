@@ -65,7 +65,7 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-// `bson:"_id"` to convert (map) 'ID' in json response to 'id'
+// `bson:"_id"` to convert (map) 'Id' in json response to 'id'
 type User struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	FirstName         string             `bson:"firstName" json:"firstName"`
