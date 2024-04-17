@@ -7,13 +7,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type HotelStore interface {
 	InsertHotel(context.Context, *customTypes.Hotel) (*customTypes.Hotel, error)
 	Update(context.Context, Map, Map) error
 	GetHotelById(context.Context, string) (*customTypes.Hotel, error)
-	GetHotels(context.Context, Map) ([]*customTypes.Hotel, error)
+	GetHotels(context.Context, Map, *Pagination) ([]*customTypes.Hotel, error)
 }
 
 type MongoHotelStore struct {
@@ -40,8 +41,12 @@ func (s *MongoHotelStore) GetHotelById(ctx context.Context, id string) (*customT
 	return &hotel, nil
 }
 
-func (s *MongoHotelStore) GetHotels(ctx context.Context, filter Map) ([]*customTypes.Hotel, error) {
-	resp, err := s.collection.Find(ctx, filter)
+func (s *MongoHotelStore) GetHotels(ctx context.Context, filter Map, pag *Pagination) ([]*customTypes.Hotel, error) {
+	opts := options.FindOptions{}
+	opts.SetSkip((pag.Page - 1) * pag.Limit)
+	opts.SetLimit(pag.Limit)
+
+	resp, err := s.collection.Find(ctx, filter, &opts)
 	if err != nil {
 		return nil, err
 	}
