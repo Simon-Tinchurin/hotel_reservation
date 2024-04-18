@@ -1,5 +1,13 @@
 # Hotel reservation backend
 
+# Project environment variables
+```
+HTTP_LISTEN_ADDRESS=:3000
+JWT_SECRET=something_super_secret
+MONGO_DB_NAME=hotel-reservation
+MONGO_DB_URL=mongodb://localhost:27017
+```
+
 ## Project outline
 - users -> book room from an hotel
 - admins -> to check reservations/bookings
@@ -35,3 +43,4 @@ docker run --name mongodb -d mongo:latest -p 27017:27017
 4. Install mongodb as a Docker container - run 'docker run --name mongodb -d --restart=unless-stopped -p 27017:27017 mongo:latest mongod --bind_ip_all' in the terminal
 5. Install mongodb client - run 'go get go.mongodb.org/mongo-driver/mongo' in the terminal
 6. Install bcrypt for passwords - run 'go get golang.org/x/crypto/bcrypt' in the terminal
+7. Install godotenv - run 'go get github.com/joho/godotenv' in the terminal

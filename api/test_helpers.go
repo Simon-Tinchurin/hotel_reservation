@@ -4,15 +4,12 @@ import (
 	"context"
 	"hotel-reservation/db"
 	"log"
+	"os"
 	"testing"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-)
-
-const (
-	testDbUri  = "mongodb://localhost:27017"
-	testDbName = "hotel-reservation-test"
 )
 
 type testDb struct {
@@ -21,14 +18,20 @@ type testDb struct {
 }
 
 func (tdb *testDb) teardown(t *testing.T) {
-	if err := tdb.client.Database(db.DBNAME).Drop(context.TODO()); err != nil {
+	dbname := os.Getenv(db.MongoDBEnvName)
+	if err := tdb.client.Database(dbname).Drop(context.TODO()); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func setup(t *testing.T) *testDb {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	// connection to the mongodb
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(testDbUri))
+	testDBuri := os.Getenv("MONGO_DB_URL_TEST")
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(testDBuri))
 	if err != nil {
 		log.Fatal(err)
 	}

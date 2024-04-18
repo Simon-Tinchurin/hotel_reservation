@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"hotel-reservation/customTypes"
+	"os"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -36,9 +37,10 @@ type MongoUserStore struct {
 }
 
 func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
+	dbname := os.Getenv(MongoDBEnvName)
 	return &MongoUserStore{
 		client:     client,
-		collection: client.Database(DBNAME).Collection(userColl),
+		collection: client.Database(dbname).Collection(userColl),
 	}
 }
 
