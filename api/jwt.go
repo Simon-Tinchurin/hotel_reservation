@@ -15,7 +15,6 @@ func JWTAuthentication(userStore db.UserStore) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tokens, ok := c.GetReqHeaders()["X-Api-Token"]
 		if !ok {
-			// return fmt.Errorf("unauthorized")
 			return ErrUnauthorized()
 		}
 		claims, err := validateToken(tokens[0])
